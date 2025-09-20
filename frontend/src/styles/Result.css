@@ -1,0 +1,60 @@
+/* Result.css */
+
+/* Center the container */
+.winner-container {
+  background-color: rgb(21, 19, 19);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Title */
+.winner-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+/* Winner message */
+.winner-container h2 {
+  font-size: 1.8rem;
+  margin: 15px 0;
+  color: #ff6b6b; /* glowing red for winner text */
+  text-shadow: 0 0 8px #ff6b6b, 0 0 16px #ff3c3c;
+}
+
+/* Score */
+.winner-container p {
+  font-size: 1.2rem;
+  margin: 8px 0;
+  color: #dcdcdc;
+}
+
+/* Back button */
+.winner-container button {
+  margin-top: 25px;
+  padding: 12px 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(90deg, #ff6a00, #ee0979);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.winner-container button:hover {
+  box-shadow: 0 0 14px rgba(255, 106, 0, 0.8);
+  transform: scale(1.05);
+}
+
+.winner-container button:active {
+  transform: scale(0.95);
+}

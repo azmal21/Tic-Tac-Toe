@@ -1,0 +1,39 @@
+.friendgame-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #0c0b0b;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.friendgame-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.friendgame-info {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.friendgame-scores {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 15px 0;
+  font-weight: bold;
+}
+
+.friendgame-scores span {
+  background: #171414;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.friendgame-board {
+  margin-top: 20px;
+}
