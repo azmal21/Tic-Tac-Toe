@@ -1,21 +1,20 @@
-// src/pages/FriendGame.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import io from "socket.io-client";
+import { socket } from "../socket";
 import Board from "../components/Board";
 import InfoPanel from "../components/InfoPanel";
 import "../styles/FriendGame.css";
-
-const SERVER = "https://tic-tac-toe-eulu.onrender.com";
 
 export default function FriendGame() {
   const { roomId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { boardSize: initialBoardSize = 3, winLength: initialWinLength = 3, name = "Player", isHost = false } =
-    location.state || {};
-
-  const socketRef = useRef(null);
+  const {
+    boardSize: initialBoardSize = 3,
+    winLength: initialWinLength = 3,
+    name = "Player",
+    isHost = false,
+  } = location.state || {};
 
   // Game state
   const [boardSize, setBoardSize] = useState(initialBoardSize);
@@ -31,11 +30,11 @@ export default function FriendGame() {
   const [showNextRoundButton, setShowNextRoundButton] = useState(false);
 
   const totalRounds = 3;
-  const targetWins = 2; // Best of 3\
+  const targetWins = 2; // Best of 3
 
   useEffect(() => {
-    const socket = io(SERVER, { transports: ["websocket"] });
-    socketRef.current = socket;
+    // Connect the socket
+    socket.connect();
 
     // Create or join room
     if (isHost) {
@@ -44,13 +43,12 @@ export default function FriendGame() {
       socket.emit("joinRoom", { roomId, name });
     }
 
-    // Error handling
+    // Event listeners
     socket.on("errorMessage", (msg) => {
       alert(msg);
       navigate("/", { replace: true });
     });
 
-    // Start game
     socket.on("startGame", (room) => {
       setBoardSize(room.boardSize);
       setWinLength(room.winLength);
@@ -62,14 +60,12 @@ export default function FriendGame() {
       if (self) setPlayerMark(self.mark);
     });
 
-    // Update room after each move
     socket.on("roomUpdate", (room) => {
       setBoard(room.board);
       setCurrentPlayer(room.currentPlayer);
       setPlayers(room.players);
     });
 
-    // Round over
     socket.on("roundOver", ({ winner: roundWinner, board: newBoard, score: newScore }) => {
       setBoard(newBoard);
       setWinner(roundWinner);
@@ -77,8 +73,6 @@ export default function FriendGame() {
       setShowNextRoundButton(true);
     });
 
-    // Match over
-    // Match over
     socket.on("matchOver", ({ matchWinner: finalWinner, score: finalScore }) => {
       setMatchWinner(finalWinner);
       setScore(finalScore);
@@ -89,55 +83,48 @@ export default function FriendGame() {
           state: {
             matchWinner: finalWinner,
             score: finalScore,
-            mode: "friend",        // indicate friend mode
+            mode: "friend",
             players: players,
-            gameUrl: window.location.href
-          }
+            gameUrl: window.location.href,
+          },
         });
       }, 500);
     });
 
-
-    // Start next round
     socket.on("roundStarted", (room) => {
       setBoard(room.board);
-      setWinner(null); // ✅ Reset winner for new round
+      setWinner(null);
       setCurrentPlayer(room.currentPlayer);
       setRound(room.round);
       setShowNextRoundButton(false);
     });
 
-    // Opponent left
     socket.on("playerLeft", ({ reason }) => {
       alert("Opponent left: " + reason);
     });
 
+    // Cleanup
     return () => socket.disconnect();
-  }, [roomId, isHost, name, navigate]);
+  }, [roomId, isHost, name, navigate, boardSize, winLength]);
 
   const handleCellClick = (index) => {
-    if (!socketRef.current || winner || matchWinner) return;
+    if (!socket || winner || matchWinner) return;
     if (playerMark !== currentPlayer) return;
     if (board[index]) return;
 
-    socketRef.current.emit("makeMove", { roomId, index });
+    socket.emit("makeMove", { roomId, index });
   };
 
   const handleNextRound = () => {
-    if (!socketRef.current) return;
-    socketRef.current.emit("nextRound", { roomId });
+    if (!socket) return;
+    socket.emit("nextRound", { roomId });
   };
 
   return (
     <div className="friendgame-container">
       <h1 className="friendgame-title">Friend Game — Room {roomId}</h1>
-
-      <p className="friendgame-info">
-        Match: First to {targetWins} wins (Best of {totalRounds})
-      </p>
-      <p className="friendgame-info">
-        Round {round} / {totalRounds}
-      </p>
+      <p className="friendgame-info">Match: First to {targetWins} wins (Best of {totalRounds})</p>
+      <p className="friendgame-info">Round {round} / {totalRounds}</p>
 
       <div className="friendgame-scores">
         {players.map((p) => (
@@ -150,7 +137,7 @@ export default function FriendGame() {
       <InfoPanel
         currentPlayer={currentPlayer}
         winner={winner || matchWinner}
-        onReset={() => socketRef.current.emit("resetMatch", { roomId })}
+        onReset={() => socket.emit("resetMatch", { roomId })}
         showDifficulty={false}
       />
 
@@ -169,4 +156,3 @@ export default function FriendGame() {
     </div>
   );
 }
-
