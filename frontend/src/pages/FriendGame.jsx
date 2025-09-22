@@ -6,7 +6,7 @@ import Board from "../components/Board";
 import InfoPanel from "../components/InfoPanel";
 import "../styles/FriendGame.css";
 
-const SERVER = import.meta.env.VITE_SERVER || "http://localhost:4000";
+const SERVER = "https://tic-tac-toe-eulu.onrender.com";
 
 export default function FriendGame() {
   const { roomId } = useParams();
@@ -169,3 +169,4 @@ export default function FriendGame() {
     </div>
   );
 }
+
