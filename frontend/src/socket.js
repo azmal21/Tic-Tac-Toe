@@ -1,5 +1,6 @@
 // socket.js
 import { io } from "socket.io-client";
 
-const SERVER = import.meta.env.VITE_SERVER || "http://localhost:4000";
+const SERVER = "https://tic-tac-toe-eulu.onrender.com";
 export const socket = io(SERVER, { autoConnect: true });
+
