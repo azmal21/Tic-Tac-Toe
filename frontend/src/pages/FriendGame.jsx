@@ -1,3 +1,4 @@
+// src/pages/FriendGame.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { socket } from "../socket";
@@ -33,7 +34,7 @@ export default function FriendGame() {
   const targetWins = 2; // Best of 3
 
   useEffect(() => {
-    // Connect the socket
+    // Connect socket once
     socket.connect();
 
     // Create or join room
@@ -73,7 +74,7 @@ export default function FriendGame() {
       setShowNextRoundButton(true);
     });
 
-    socket.on("matchOver", ({ matchWinner: finalWinner, score: finalScore }) => {
+    socket.on("matchOver", ({ matchWinner: finalWinner, score: finalScore, players: finalPlayers }) => {
       setMatchWinner(finalWinner);
       setScore(finalScore);
       setShowNextRoundButton(false);
@@ -84,7 +85,7 @@ export default function FriendGame() {
             matchWinner: finalWinner,
             score: finalScore,
             mode: "friend",
-            players: players,
+            players: finalPlayers,
             gameUrl: window.location.href,
           },
         });
@@ -103,20 +104,23 @@ export default function FriendGame() {
       alert("Opponent left: " + reason);
     });
 
-    // Cleanup
-    return () => socket.disconnect();
-  }, [roomId, isHost, name, navigate, boardSize, winLength]);
+    // Cleanup on unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, [roomId, isHost, name, navigate]);
 
+  // Handle player move
   const handleCellClick = (index) => {
-    if (!socket || winner || matchWinner) return;
+    if (winner || matchWinner) return;
     if (playerMark !== currentPlayer) return;
     if (board[index]) return;
 
     socket.emit("makeMove", { roomId, index });
   };
 
+  // Handle next round
   const handleNextRound = () => {
-    if (!socket) return;
     socket.emit("nextRound", { roomId });
   };
 
