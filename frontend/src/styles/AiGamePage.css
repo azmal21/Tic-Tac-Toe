@@ -18,7 +18,11 @@
   max-width: 100%;
   gap: 0;
   padding-top: 10px;
+
+  min-width: 240px;   
+  min-height: 240px;  
 }
+
 
 .cell {
   width: clamp(50px, 15vw, 80px);
@@ -246,4 +250,5 @@ button:active {
   margin-top:auto;
   width: 90%;
   margin-bottom: 24px;
+
 }
