@@ -1,29 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
 
 const Board = ({ board, onCellClick, boardSize, disabled, winningCells = [] }) => {
-  // Set CSS custom property for board size
+  const [cellSize, setCellSize] = useState(80); // default
+
   useEffect(() => {
-    document.documentElement.style.setProperty('--board-size', boardSize);
-  }, [boardSize]);
+    const calculateCellSize = () => {
+      const screenWidth = window.innerWidth;
+      let size;
+      if (screenWidth <= 375) size = 55;
+      else if (screenWidth <= 480) size = 60;
+      else if (screenWidth <= 768) size = 70;
+      else size = 80;
+      setCellSize(size);
+    };
 
-  // Calculate cell size based on screen width and board size
-  const getCellSize = () => {
-    const screenWidth = window.innerWidth;
-        
-    if (screenWidth <= 375) {
-      return 55; // Very small screens
-    } else if (screenWidth <= 480) {
-      return 60; // Small screens
-    } else if (screenWidth <= 768) {
-      return 70; // Mobile tablets
-    } else {
-      return 80; // Desktop
-    }
-  };
+    calculateCellSize();
+    window.addEventListener("resize", calculateCellSize);
 
-  const cellSize = getCellSize();
-  const glowSize = cellSize * 0.75; // Proportional glow mark size
+    return () => window.removeEventListener("resize", calculateCellSize);
+  }, []);
+
+  const glowSize = cellSize * 0.75;
 
   return (
     <div
