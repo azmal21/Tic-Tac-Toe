@@ -9,7 +9,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["https://your-frontend.onrender.com"], 
+    origin: ["*"], 
     methods: ["GET", "POST"]
   }
 });
@@ -189,4 +189,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(4000, () => console.log("🚀 Server running on 4000"));
+
 
